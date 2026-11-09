@@ -745,8 +745,10 @@ own wasm_instance_t* wasm_instance_new(wasm_store_t* store,
   // reading imports->data[i] beyond imports->size would be out of bounds.
   size_t import_count = module->As<Module>()->import_types().size();
   if (imports->size != import_count) {
-    *trap_out = new wasm_trap_t{
-        Trap::New(store->I, "wrong number of imports provided")};
+    if (trap_out) {
+      *trap_out = new wasm_trap_t{
+          Trap::New(store->I, "wrong number of imports provided")};
+    }
     return nullptr;
   }
 
@@ -759,7 +761,9 @@ own wasm_instance_t* wasm_instance_new(wasm_store_t* store,
   auto instance =
       Instance::Instantiate(store->I, module->I->self(), import_refs, &trap);
   if (trap) {
-    *trap_out = new wasm_trap_t{trap};
+    if (trap_out) {
+      *trap_out = new wasm_trap_t{trap};
+    }
     return nullptr;
   }
 
