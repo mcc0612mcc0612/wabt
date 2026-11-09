@@ -459,13 +459,17 @@ static wasm_val_t FromWabtValue(Store& store, const TypedValue& tv) {
     case Type::FuncRef: {
       Ref ref = tv.value.Get<Ref>();
       out_value.kind = WASM_FUNCREF;
-      out_value.of.ref = new wasm_func_t(store.UnsafeGet<Func>(ref));
+      out_value.of.ref =
+          ref == Ref::Null ? nullptr
+                           : new wasm_func_t(store.UnsafeGet<Func>(ref));
       break;
     }
     case Type::ExternRef: {
       Ref ref = tv.value.Get<Ref>();
       out_value.kind = WASM_ANYREF;
-      out_value.of.ref = new wasm_foreign_t(store.UnsafeGet<Foreign>(ref));
+      out_value.of.ref =
+          ref == Ref::Null ? nullptr
+                           : new wasm_foreign_t(store.UnsafeGet<Foreign>(ref));
       break;
     }
     default:
